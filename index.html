@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trevina's Birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+      EDIT ME: This is your color/theme config. Two moods:
+      - "terminal" mood for the boot + memories + compiling sections
+      - "letter" mood for the final reveal (warmer, handwritten feel)
+     ============================================================ */
+  :root{
+    --bg: #0d1117;
+    --bg-raised: #161b22;
+    --text: #c9d1d9;
+    --text-dim: #6e7681;
+    --accent: #e8564a;      /* strawberry red — cursor/prompt/countdown */
+    --accent-2: #5fb86a;    /* leaf green — keywords, ripening bar */
+    --border: #30363d;
+    --mono: 'JetBrains Mono', monospace;
+
+    --letter-bg: #faf1ee;
+    --letter-text: #3a2620;
+    --letter-accent: #c8433a;
+    --serif: 'Source Serif 4', serif;
+    --script: 'Caveat', cursive;
+  }
+
+  .berry-icon{ width: 1em; height: 1em; vertical-align: -0.12em; margin: 0 2px; }
+  .berry-icon.lg{ width: 32px; height: 32px; margin: 0 0 8px; }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    line-height: 1.6;
+  }
+  body.letter-mode{
+    background: var(--letter-bg);
+    color: var(--letter-text);
+  }
+
+  section{
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 48px 24px;
+  }
+
+  html.locked, body.locked{
+    overflow: hidden;
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  #countdown.locked-view{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background: var(--bg);
+  }
+  #countdown .scroll-hint{ display:none; }
+  #countdown.unlocked .scroll-hint{ display:block; }
+  #countdown.unlocked .locked-hint{ display:none; }
+
+  /* ---------- Countdown block ---------- */
+  #countdown{ text-align:center; }
+  #countdown .label{
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  #countdown .label .fn{ color: var(--accent-2); }
+  #countdown .units{
+    display:flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content:center;
+  }
+  #countdown .unit{
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    min-width: 84px;
+  }
+  #countdown .unit .num{
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  #countdown .unit .u-label{
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+  #countdown .locked-hint{
+    margin-top: 40px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  #countdown .locked-hint .cursor{ margin-left:4px; }
+  #countdown .scroll-hint{
+    margin-top: 40px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  #countdown .scroll-hint .cursor{ margin-left:4px; }
+  #countdown.arrived .units{ display:none; }
+  #countdown .arrived-msg{ display:none; font-size: 20px; color: var(--accent); }
+  #countdown.arrived .arrived-msg{ display:block; }
+
+  /* ---------- Boot screen ---------- */
+  #boot{ text-align:left; }
+  #boot .console{
+    max-width: 640px;
+    width:100%;
+  }
+  #boot .line{ white-space: pre-wrap; }
+  #boot .prompt{ color: var(--accent); }
+.cursor{
+  display:inline-block;
+  width:9px; height:1.1em;
+  background: var(--accent);
+  margin-left:2px;
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite, glow-pulse 1.6s ease-in-out infinite;
+  border-radius: 2px;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+@keyframes glow-pulse{
+  0%, 100%{ box-shadow: 0 0 2px 0 rgba(232, 86, 74, 0.4); }
+  50%{ box-shadow: 0 0 10px 2px rgba(232, 86, 74, 0.75); }
+}
+
+  /* ---------- Memory function blocks ---------- */
+  .memory{
+    max-width: 640px;
+    width:100%;
+    opacity:0;
+    transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .memory.visible{ opacity:1; transform: translateY(0); }
+  .memory .signature{
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .memory .signature .fn{ color: var(--accent-2); }
+  .memory .comment{
+    color: #8b949e;
+    font-size: 15px;
+    margin: 0 0 16px;
+  }
+  .memory img{
+    width:100%;
+    max-height: 360px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display:block;
+  }
+  .memory .caption{
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .memory .caption::before{ content: "// "; }
+
+  /* ---------- Compiling section ---------- */
+  #compile .console{ max-width: 560px; width:100%; }
+  #compile .bar-track{
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow:hidden;
+    margin: 18px 0;
+  }
+  #compile .bar-fill{
+    height:100%;
+    width:0%;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    transition: width 2.4s linear;
+  }
+  #compile .log-line{ color: var(--text-dim); font-size: 13px; opacity:0; transition: opacity .4s; }
+  #compile .log-line.show{ opacity:1; }
+
+  /* ---------- Letter section ---------- */
+  #letter{ text-align:center; }
+  #letter .heading{
+    font-family: var(--script);
+    font-size: 42px;
+    color: var(--letter-accent);
+    margin-bottom: 24px;
+  }
+  #letter .paper{
+    max-width: 620px;
+    font-family: var(--serif);
+    font-size: 19px;
+    text-align: left;
+    white-space: pre-wrap;
+    min-height: 120px;
+  }
+  #letter .signoff{
+    margin-top: 28px;
+    font-family: var(--script);
+    font-size: 28px;
+    color: var(--letter-accent);
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+  #letter .signoff.show{ opacity:1; }
+
+  @media (prefers-reduced-motion: reduce){
+    .memory, #compile .log-line, #letter .signoff{ transition: none; }
+    .cursor{ animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable strawberry icon, referenced via <use> throughout the page -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="strawberry" viewBox="0 0 24 24">
+      <path d="M12 22C7 22 3.5 15.5 3.5 10.8C3.5 6.8 7 4.8 12 4.8C17 4.8 20.5 6.8 20.5 10.8C20.5 15.5 17 22 12 22Z" fill="#e8564a"/>
+      <g fill="#fbe27a">
+        <ellipse cx="8.3" cy="10.2" rx="0.6" ry="1" transform="rotate(-20 8.3 10.2)"/>
+        <ellipse cx="12" cy="9" rx="0.6" ry="1"/>
+        <ellipse cx="15.7" cy="10.2" rx="0.6" ry="1" transform="rotate(20 15.7 10.2)"/>
+        <ellipse cx="9.5" cy="14.2" rx="0.6" ry="1" transform="rotate(-15 9.5 14.2)"/>
+        <ellipse cx="13" cy="14.6" rx="0.6" ry="1" transform="rotate(10 13 14.6)"/>
+        <ellipse cx="16" cy="14.2" rx="0.6" ry="1" transform="rotate(20 16 14.2)"/>
+        <ellipse cx="11.5" cy="18.2" rx="0.6" ry="1"/>
+      </g>
+      <path d="M7 5.6C8 3.6 10 3.1 12 4.1C14 3.1 16 3.6 17 5.6C15 5.1 13.5 5.6 12 6.6C10.5 5.6 9 5.1 7 5.6Z" fill="#5fb86a"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     SECTION 0: COUNTDOWN
+     EDIT: set TARGET_DATE in the script below to her actual birthday.
+     Nothing here needs editing otherwise — it updates live.
+     ============================================================ -->
+<section id="countdown">
+  <svg class="berry-icon lg"><use href="#strawberry"/></svg>
+  <div class="label"><span class="fn">const</span> daysUntilBirthday = () =&gt;</div>
+  <div class="units">
+    <div class="unit"><div class="num" id="cd-days">00</div><div class="u-label">DAYS</div></div>
+    <div class="unit"><div class="num" id="cd-hours">00</div><div class="u-label">HOURS</div></div>
+    <div class="unit"><div class="num" id="cd-mins">00</div><div class="u-label">MIN</div></div>
+    <div class="unit"><div class="num" id="cd-secs">00</div><div class="u-label">SEC</div></div>
+  </div>
+  <div class="arrived-msg">&gt; countdown complete. happy birthday.</div>
+  <div class="locked-hint" id="locked-hint">&gt; locked until <span style="color: #e8564a;"><b>Farawla</b></span> Day<span class="cursor"></span></div>
+  <div class="scroll-hint">scroll to run memory_lane.exe<span class="cursor"></span></div>
+</section>
+
+<!-- ============================================================
+      SECTION 1: BOOT SCREEN
+      EDIT: change "friend_name" and the typed lines below to taste
+      ============================================================ -->
+<section id="boot">
+  <div class="console">
+    <div class="line"><span class="prompt">&gt;</span> initializing memory_lane.exe <svg class="berry-icon"><use href="#strawberry"/></svg></div>
+    <div class="line" id="boot-typed"></div>
+    <div class="line" id="boot-typed-2"></div>
+    <div class="line" id="boot-typed-3"></div>
+    <div class="line" id="boot-typed-4"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2: MEMORY BLOCKS
+     EDIT: duplicate a .memory block for each memory. Each one needs:
+       - data-fn: a short function-style name (e.g. memory_01)
+       - .comment: the inside joke / context, written like a code comment
+       - img src: your photo (put photos in the same folder as this file)
+       - .caption: one line describing the photo
+     Feel free to add or remove blocks — the JS below finds them automatically.
+     ============================================================ -->
+<section id="memories">
+
+  <div class="memory" data-fn="memory_01">
+    <div class="signature"><span class="fn">function</span> memory_01() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
+    <p class="comment">// EDIT: write the inside joke / memory context here</p>
+    <img src="PHOTO_1.jpg" alt="Memory 1">
+    <p class="caption">EDIT: one-line caption for this photo</p>
+    <div class="signature">}</div>
+  </div>
+
+  <div class="memory" data-fn="memory_02">
+    <div class="signature"><span class="fn">function</span> memory_02() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
+    <p class="comment">// EDIT: write the inside joke / memory context here</p>
+    <img src="PHOTO_2.jpg" alt="Memory 2">
+    <p class="caption">EDIT: one-line caption for this photo</p>
+    <div class="signature">}</div>
+  </div>
+
+  <div class="memory" data-fn="memory_03">
+    <div class="signature"><span class="fn">function</span> memory_03() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
+    <p class="comment">// EDIT: write the inside joke / memory context here</p>
+    <img src="PHOTO_3.jpg" alt="Memory 3">
+    <p class="caption">EDIT: one-line caption for this photo</p>
+    <div class="signature">}</div>
+  </div>
+
+  <!-- add more .memory blocks here if you want -->
+
+</section>
+
+<!-- ============================================================
+     SECTION 3: COMPILING TRANSITION (mostly leave as-is)
+     ============================================================ -->
+<section id="compile">
+  <div class="console">
+    <div class="line"><span class="prompt">&gt;</span> linking memories.o ...</div>
+    <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+    <div class="log-line" id="log-1">resolving shared history... ok</div>
+    <div class="log-line" id="log-2">merging inside jokes... ok</div>
+    <div class="log-line" id="log-3">compiling letter.txt</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4: THE LETTER
+     EDIT: LETTER_TEXT below is a placeholder — replace with the real
+     letter. Keep paragraph breaks by leaving blank lines.
+     Also edit "Your name" in the sign-off.
+     ============================================================ -->
+<section id="letter">
+  <svg class="berry-icon lg"><use href="#strawberry"/></svg>
+  <div class="heading">Happy birthday, Farawla</div>
+  <div class="paper" id="letter-text" data-full="EDIT: paste your real letter here. It can be as long as you want — it will type itself out slowly, line by line, once this section scrolls into view.
+
+You can write it exactly like you would on paper. Line breaks like this one are preserved."></div>
+  <div class="signoff" id="signoff">— Your name</div>
+</section>
+
+<script>
+/* ============================================================
+   CONFIG — the only thing you *must* change is the boot line
+   ============================================================ */
+const HER_NAME = "Trevina";
+const BOOT_LINE = `> loading friend: ${HER_NAME}`;
+const BOOT_LINE_2 = "> cuteness_overload.. detected ✓"
+const BOOT_LINE_3 = "> Unlocking 2 years of memories.."
+const BOOT_LINE_4 = "> Done :)"
+const DEBUG_UNLOCK = true; // set to false before sending the real link
+
+/* EDIT: set her actual birthday here (year, month [1-12], day, hour, minute) */
+const TARGET_DATE = new Date(2026, 6, 27, 0, 0, 0); // month is 0-indexed: 6 = July
+
+/* ---------- Countdown timer + scroll lock ---------- */
+function pad(n){ return String(n).padStart(2, '0'); }
+
+let unlocked = false;
+function lockScroll(){
+  document.documentElement.classList.add('locked');
+  document.body.classList.add('locked');
+  document.getElementById('countdown').classList.add('locked-view');
+}
+function unlockScroll(){
+  if(unlocked) return;
+  unlocked = true;
+  document.documentElement.classList.remove('locked');
+  document.body.classList.remove('locked');
+  const cd = document.getElementById('countdown');
+  cd.classList.remove('locked-view');
+  cd.classList.add('unlocked');
+}
+
+// Belt-and-suspenders: block wheel/touch/key scrolling while locked,
+// in case a browser lets scroll leak through overflow:hidden.
+function blockIfLocked(e){
+  if(!unlocked) e.preventDefault();
+}
+window.addEventListener('wheel', blockIfLocked, { passive:false });
+window.addEventListener('touchmove', blockIfLocked, { passive:false });
+window.addEventListener('keydown', function(e){
+  if(unlocked) return;
+  const keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Space',' '];
+  if(keys.includes(e.key)) e.preventDefault();
+});
+
+function updateCountdown(){
+  const now = new Date();
+  // let diff = TARGET_DATE - now;
+  let diff = DEBUG_UNLOCK ? -1 : TARGET_DATE - now;
+  const el = document.getElementById('countdown');
+  if(diff <= 0){
+    el.classList.add('arrived');
+    unlockScroll();
+    return;
+  }
+  lockScroll();
+  const day = Math.floor(diff / (1000*60*60*24));
+  diff -= day * (1000*60*60*24);
+  const hr = Math.floor(diff / (1000*60*60));
+  diff -= hr * (1000*60*60);
+  const min = Math.floor(diff / (1000*60));
+  diff -= min * (1000*60);
+  const sec = Math.floor(diff / 1000);
+
+  document.getElementById('cd-days').textContent = pad(day);
+  document.getElementById('cd-hours').textContent = pad(hr);
+  document.getElementById('cd-mins').textContent = pad(min);
+  document.getElementById('cd-secs').textContent = pad(sec);
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ---------- Boot screen typing effect ---------- */
+function typeLine(el, text, speed, onDone){
+  let i = 0;
+  el.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  function step(){
+    el.textContent = text.slice(0, i);
+    el.appendChild(cursor);
+    i++;
+    if(i <= text.length){
+      setTimeout(step, speed);
+    } else if(onDone){
+      onDone();
+    }
+  }
+  step();
+}
+typeLine(document.getElementById('boot-typed'), BOOT_LINE, 150, function(){
+  typeLine(document.getElementById('boot-typed-2'), BOOT_LINE_2, 90, function(){
+    typeLine(document.getElementById('boot-typed-3'), BOOT_LINE_3, 90, function(){
+      typeLine(document.getElementById('boot-typed-4'), BOOT_LINE_4, 90);
+    });
+  });
+});
+
+/* ---------- Scroll-reveal for memory blocks ---------- */
+const memoryObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.35 });
+document.querySelectorAll('.memory').forEach(m => memoryObserver.observe(m));
+
+/* ---------- Compiling animation, triggers once when scrolled into view ---------- */
+let compiled = false;
+const compileObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting && !compiled){
+      compiled = true;
+      document.getElementById('bar-fill').style.width = '100%';
+      const logs = ['log-1','log-2','log-3'];
+      logs.forEach((id, idx) => {
+        setTimeout(() => document.getElementById(id).classList.add('show'), 400 + idx * 700);
+      });
+    }
+  });
+}, { threshold: 0.5 });
+compileObserver.observe(document.getElementById('compile'));
+
+/* ---------- Letter reveal: switch theme + typewriter the letter ---------- */
+let letterStarted = false;
+const letterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting && !letterStarted){
+      letterStarted = true;
+      document.body.classList.add('letter-mode');
+      const el = document.getElementById('letter-text');
+      const full = el.getAttribute('data-full');
+      let i = 0;
+      function step(){
+        el.textContent = full.slice(0, i);
+        i++;
+        if(i <= full.length){
+          setTimeout(step, 22);
+        } else {
+          document.getElementById('signoff').classList.add('show');
+        }
+      }
+      step();
+    }
+  });
+}, { threshold: 0.3 });
+letterObserver.observe(document.getElementById('letter'));
+</script>
+
+</body>
+</html>
