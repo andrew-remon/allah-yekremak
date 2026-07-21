@@ -161,17 +161,19 @@
   }
   .memory .signature .fn{ color: var(--accent-2); }
   .memory .comment{
-    color: #8b949e;
-    font-size: 15px;
+    color: var(--text-dim);
+    font-size: 18px;
     margin: 0 0 16px;
+    text-align: right;
   }
-  .memory img{
-    width:100%;
+  .memory img {
+    display: inline-block;
+    width: 80%;
     max-height: 360px;
     object-fit: cover;
     border-radius: 6px;
     border: 1px solid var(--border);
-    display:block;
+    vertical-align: middle;
   }
   .memory .caption{
     margin-top: 12px;
@@ -295,33 +297,47 @@
      Feel free to add or remove blocks — the JS below finds them automatically.
      ============================================================ -->
 <section id="memories">
-
   <div class="memory" data-fn="memory_01">
     <div class="signature"><span class="fn">function</span> memory_01() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
-    <p class="comment">// EDIT: write the inside joke / memory context here</p>
-    <img src="PHOTO_1.jpg" alt="Memory 1">
-    <p class="caption">EDIT: one-line caption for this photo</p>
+    <p class="comment" style="text-align: right;">يمكن دي أول مرة نقعد فيها سوا و اكتشف حماسك و حركاتك و رغبتك دايما في انك تطلعي من اي موقف بكمية كبيرة من الميموريز (و صور
+      كتيرة بردو)</p>
+    <img src="images/1.jpeg" alt="Memory 1">
+    <p class="caption">شوفي مكسوف ازاي في أول مرة</p>
     <div class="signature">}</div>
   </div>
 
   <div class="memory" data-fn="memory_02">
     <div class="signature"><span class="fn">function</span> memory_02() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
-    <p class="comment">// EDIT: write the inside joke / memory context here</p>
-    <img src="PHOTO_2.jpg" alt="Memory 2">
-    <p class="caption">EDIT: one-line caption for this photo</p>
+    <p class="comment">عارفك انتي بتحبي اليوم دا</p>
+    <img src="images/3.jpeg" alt="Memory 2">
+    <img src="images/3_2.jpeg" alt="Memory 2">
+    <p class="caption">معرفش لحد دلوقتي عملناه ازاي البروجيكت دا بس عدي علي خير</p>
     <div class="signature">}</div>
   </div>
 
   <div class="memory" data-fn="memory_03">
     <div class="signature"><span class="fn">function</span> memory_03() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
-    <p class="comment">// EDIT: write the inside joke / memory context here</p>
-    <img src="PHOTO_3.jpg" alt="Memory 3">
-    <p class="caption">EDIT: one-line caption for this photo</p>
+    <p class="comment">لا معلش بقي - كله إلا السكين كير (و الجطعة الشقرا)</p>
+    <img src="images/5.jpeg" alt="Memory 5">
+    <p class="caption">جوي منشكح في الباك جراوند وهو مبوظلنا الصورة</p>
     <div class="signature">}</div>
   </div>
 
-  <!-- add more .memory blocks here if you want -->
+  <div class="memory" data-fn="memory_04">
+    <div class="signature"><span class="fn">function</span> memory_04() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
+    <p class="comment">احسن واحدة تمسك المضرب (علشان مش بتلعب الكورة - غالبا مخاصماها)</p>
+    <img src="images/2.jpeg" alt="Memory 4">
+    <p class="caption">حتي في الصورة دي واقفة قدامي بردو - اتعتع شوية كدة بقي</p>
+    <div class="signature">}</div>
+  </div>
 
+  <div class="memory" data-fn="memory_05">
+    <div class="signature"><span class="fn">function</span> memory_05() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
+    <p class="comment">لا مفيش نزلنا نتمشي في عز الشمس الساعة 10 الصبح و لفينا شوية في السوبر ماركت و وشي اتحرق سيكا وشربنا ليمون نعناع</p>
+    <img src="images/4.jpeg" alt="Memory 5" style="width: 50%;">
+    <p class="caption">مع انه شكل اليوم معجبكيش بس ايه القمر اللي في الصورة د</p>
+    <div class="signature">}</div>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -361,10 +377,10 @@ const BOOT_LINE = `> loading friend: ${HER_NAME}`;
 const BOOT_LINE_2 = "> cuteness_overload.. detected ✓"
 const BOOT_LINE_3 = "> Unlocking 2 years of memories.."
 const BOOT_LINE_4 = "> Done :)"
-const DEBUG_UNLOCK = false; // set to false before sending the real link
+const DEBUG_UNLOCK = true; // set to false before sending the real link
 
 /* EDIT: set her actual birthday here (year, month [1-12], day, hour, minute) */
-const TARGET_DATE = new Date(2026, 6, 27, 0, 0, 0); // month is 0-indexed: 6 = July
+const TARGET_DATE = new Date(2026, 6, 28, 0, 0, 0); // month is 0-indexed: 6 = July
 
 /* ---------- Countdown timer + scroll lock ---------- */
 function pad(n){ return String(n).padStart(2, '0'); }
