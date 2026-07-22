@@ -335,7 +335,7 @@
     <div class="signature"><span class="fn">function</span> memory_05() <svg class="berry-icon"><use href="#strawberry"/></svg>{</div>
     <p class="comment">لا مفيش نزلنا نتمشي في عز الشمس الساعة 10 الصبح و لفينا شوية في السوبر ماركت و وشي اتحرق سيكا وشربنا ليمون نعناع</p>
     <img src="images/4.jpeg" alt="Memory 5" style="width: 50%;">
-    <p class="caption">مع انه شكل اليوم معجبكيش بس ايه القمر اللي في الصورة د</p>
+    <p class="caption">مع انه شكل اليوم معجبكيش بس ايه القمر اللي في الصورة دا</p>
     <div class="signature">}</div>
   </div>
 </section>
@@ -361,11 +361,17 @@
      ============================================================ -->
 <section id="letter">
   <svg class="berry-icon lg"><use href="#strawberry"/></svg>
-  <div class="heading">Happy birthday, Farawla</div>
-  <div class="paper" id="letter-text" data-full="EDIT: paste your real letter here. It can be as long as you want — it will type itself out slowly, line by line, once this section scrolls into view.
+  <div class="heading">doğum günün kutlu olsun, Farawla</div>
+  <div class="paper" dir="rtl" id="letter-text" data-full="مش عارف ابتدي منين بس سنتين عدوا بسرعة - كان فيهم المواقف الحلوة و الوحشة (و المحرجة بردو)
 
-You can write it exactly like you would on paper. Line breaks like this one are preserved."></div>
-  <div class="signoff" id="signoff">— Your name</div>
+  سنتين بدأت اتعرف علي شخصية جديدة،مختلفة،متحمسة، -اسمها تريفينا- ساعدتني اني اطلع برا الكمفورت زون بتاعتي واكتشفت اني كنت محتاج دا (او مكنش عندي اوبشن علشان ميتنكدش عليا)
+  سنتين معرفتيش تقلبي فيها الترابيزة عليا ولا مرة (يتم رخامة)
+  سنتين فيها كلام حلو كتير زي الله يكرمك كدة و محتوي من الستيكرات بقي مش بيخلص
+  سنتين اتغيرت انا فيها و اكتشفت في نفسي حاجات جديدة و اعتقد ان الفضل دا يعود ليكي انتي في الأساس
+
+  مش عارف المفروض اقولك كل سنة وانتي طيبة ولا شكرا فا قررت اني اقول الإتنين. شكرا علي كل لحظة حلوة انا قضيتها في الكلية و براها  بسببك - حقيقي ممتن.
+  و كل سنة وانتي طيبة وعقبال سنين كتيرة تكوني ناجحة و مكسرة الدنيا علشان انتي تستاهلي دا"></div>
+  <div class="signoff" id="signoff">— Andrew</div>
 </section>
 
 <script>
@@ -377,9 +383,8 @@ const BOOT_LINE = `> loading friend: ${HER_NAME}`;
 const BOOT_LINE_2 = "> cuteness_overload.. detected ✓"
 const BOOT_LINE_3 = "> Unlocking 2 years of memories.."
 const BOOT_LINE_4 = "> Done :)"
-const DEBUG_UNLOCK = false; // set to false before sending the real link
+const DEBUG_UNLOCK = false;
 
-/* EDIT: set her actual birthday here (year, month [1-12], day, hour, minute) */
 const TARGET_DATE = new Date(2026, 6, 28, 0, 0, 0); // month is 0-indexed: 6 = July
 
 /* ---------- Countdown timer + scroll lock ---------- */
@@ -507,7 +512,7 @@ const letterObserver = new IntersectionObserver((entries) => {
         el.textContent = full.slice(0, i);
         i++;
         if(i <= full.length){
-          setTimeout(step, 22);
+          setTimeout(step, 60);
         } else {
           document.getElementById('signoff').classList.add('show');
         }
